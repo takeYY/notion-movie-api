@@ -1,0 +1,177 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class='container pb-4'>
+  <h3 class='text-center'>{{basic_data.get('title')}}</h3>
+
+  <div class='container-fluid'>
+    <form action={{ url_for('index.update', page_id=page_id) }} method=post>
+      <div class='my-4 row'>
+        {#
+        ##### ポスター画像 ######
+        #}
+        <div class='col-md-4'>
+          <img src={{ movie.get('cover_url') }}
+              class='img-thumbnail' width='100%'>
+        </div>
+
+        <div class='col-md-8'>
+          {#
+          ##### 映画タイトル #####
+          #}
+          <div class='form-group row'>
+            <label class='col-sm-4 col-form-label d-flex align-items-center'>
+              <div class='badge badge-danger'>
+                必須
+              </div>
+              　タイトル
+            </label>
+            <div class='col-sm-8'>
+              <input type='text' class='form-control w-50' name='title'
+                  value={{ movie.get('title') }} required>
+            </div>
+          </div>
+
+          {#
+          ##### ステータス ######
+          #}
+          <div class='form-group row'>
+            <label class='col-sm-4 col-form-label d-flex align-items-center'>
+              <div class='badge badge-danger'>
+                必須
+              </div>
+              　ステータス
+            </label>
+            <div class='col-sm-8 d-flex align-items-center'>
+              <div class='form-check form-check-inline'>
+                <input class='form-check-input' type='radio' name='status' id='status-watched' value='Watched'
+                    {{ 'checked' if movie.get('has_watched') else '' }}>
+                <label class='form-check-label' for='status-watched'>Watched</label>
+              </div>
+              <div class='form-check form-check-inline'>
+                <input class='form-check-input' type='radio' name='status' id='status-to-watch' value='To Watch'
+                    {{ 'checked' if not movie.get('has_watched') else '' }}>
+                <label class='form-check-label' for='status-to-watch'>To Watch</label>
+              </div>
+            </div>
+          </div>
+          <hr>
+          {#
+          ##### 評価 #####
+          #}
+          <div class='form-group row'>
+            <label class='col-sm-4 col-form-label d-flex align-items-center'>
+              <div class='badge badge-secondary'>
+                任意
+              </div>
+              　評価
+            </label>
+            <div class='col-sm-8'>
+              <select name='rating' class='form-control'>
+                <option value='0' {{ 'selected' if not movie.get('rating') else '' }}>-</option>
+                {% for i in range(5) %}
+                  <option value={{ loop.revindex }}
+                      {% if movie.get('rating') %}
+                        {{ 'selected' if movie.get('rating') == loop.revindex else '' }}
+                      {% endif %}>
+                        {{loop.revindex}}: {{ '★'*loop.revindex }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          {#
+          ##### ジャンル #####
+          #}
+          <div class='form-group row'>
+            <label class='col-sm-4 col-form-label d-flex align-items-center'>
+              <div class='badge badge-secondary'>
+                任意
+              </div>
+              　ジャンル
+            </label>
+            <div class='col-sm-8 d-flex align-items-center'>
+              <div class='px-3 row'>
+                {% for key, value in genres.items() %}
+                  <div class='form-check form-check-inline col-md-4'>
+                    <input class='form-check-input' type='checkbox' name='genres' id='genre-{{key}}' value={{value}}
+                        {{ 'checked' if value in movie.get('genres') else '' }}>
+                    <label class='form-check-label' for='genre-{{key}}'>{{value}}</label>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          {#
+          ##### 視聴回数 #####
+          #}
+          <div class='form-group row'>
+            <label class='col-sm-4 col-form-label d-flex align-items-center'>
+              <div class='badge badge-secondary'>
+                任意
+              </div>
+              　視聴回数
+            </label>
+            <div class='col-sm-8'>
+              <input type='number' class='form-control w-50' name='views'
+                  value={{ movie.get('views') }}>
+            </div>
+          </div>
+          <hr>
+          {#
+          ##### 初鑑賞日 #####
+          #}
+          <div class='form-group row'>
+            <label class='col-sm-4 col-form-label d-flex align-items-center'>
+              <div class='badge badge-secondary'>
+                任意
+              </div>
+              　初鑑賞日
+            </label>
+            <div class='col-sm-8'>
+              <input type='date' class='form-control w-50' name='first-watched-at'
+                  value={{ movie.get('first_watched_at') }}>
+            </div>
+          </div>
+
+          {#
+          ##### 最終鑑賞日 #####
+          #}
+          <div class='form-group row'>
+            <label class='col-sm-4 col-form-label d-flex align-items-center'>
+              <div class='badge badge-secondary'>
+                任意
+              </div>
+              　最終鑑賞日
+            </label>
+            <div class='col-sm-8'>
+              <input type='date' class='form-control w-50' name='last-watched-at'
+                  value={{ movie.get('last_watched_at') }}>
+            </div>
+          </div>
+
+          {#
+          ##### 感想 #####
+          #}
+          <div class='form-group row'>
+            <label class='col-sm-4 col-form-label d-flex align-items-center'>
+              <div class='badge badge-secondary'>
+                任意
+              </div>
+              　感想
+            </label>
+            <div class='col-sm-8'>
+              <textarea class='form-control'
+                  name='feeling'>{{ movie.get('feeling') if movie.get('feeling') else '' }}</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class='text-center'>
+        <button type='submit' class='btn btn-primary w-25'>更新</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

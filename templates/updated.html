@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class='container pb-4'>
+  <h3 class='text-center'>{{basic_data.get('title')}}</h3>
+
+  <div class='container-fluid'>
+    <div class='my-4 row'>
+      {#
+      ##### ポスター画像 ######
+      #}
+      <div class='col-md-4'>
+        <img src={{ movie.get('cover_url') }}
+            class='img-thumbnail' width='100%'>
+      </div>
+
+      <div class='col-md-8'>
+        {#
+        ##### 映画タイトル #####
+        #}
+        <div class='form-group row'>
+          <label class='col-sm-4 col-form-label'>タイトル</label>
+          <div class='col-sm-8 d-flex align-items-center'>
+            {{ movie.get('title') }}
+          </div>
+        </div>
+        <hr>
+        {#
+        ##### ステータス ######
+        #}
+        <div class='form-group row'>
+          <label class='col-sm-4 col-form-label'>ステータス</label>
+          <div class='col-sm-8 d-flex align-items-center'>
+            {{ 'Watched' if movie.get('has_watched') else 'To Watch' }}
+          </div>
+        </div>
+        <hr>
+        {#
+        ##### 評価 #####
+        #}
+        <div class='form-group row'>
+          <label class='col-sm-4 col-form-label'>評価</label>
+          <div class='col-sm-8 d-flex align-items-center'>
+            {{ '★'*movie.get('rating') }}
+          </div>
+        </div>
+        <hr>
+        {#
+        ##### ジャンル #####
+        #}
+        <div class='form-group row'>
+          <label class='col-sm-4 col-form-label'>ジャンル</label>
+          <div class='col-sm-8 d-flex align-items-center'>
+            {{ movie.get('genres')|join(',') }}
+          </div>
+        </div>
+        <hr>
+        {#
+        ##### 視聴回数 #####
+        #}
+        <div class='form-group row'>
+          <label class='col-sm-4 col-form-label'>視聴回数</label>
+          <div class='col-sm-8 d-flex align-items-center'>
+            {{ movie.get('views') }}
+          </div>
+        </div>
+        <hr>
+        {#
+        ##### 初鑑賞日 #####
+        #}
+        <div class='form-group row'>
+          <label class='col-sm-4 col-form-label'>初鑑賞日</label>
+          <div class='col-sm-8 d-flex align-items-center'>
+            {{ movie.get('first_watched_at') }}
+          </div>
+        </div>
+        <hr>
+        {#
+        ##### 最終鑑賞日 #####
+        #}
+        <div class='form-group row'>
+          <label class='col-sm-4 col-form-label'>最終鑑賞日</label>
+          <div class='col-sm-8 d-flex align-items-center'>
+            {{ movie.get('last_watched_at') }}
+          </div>
+        </div>
+        <hr>
+        {#
+        ##### 感想 #####
+        #}
+        <div class='form-group row'>
+          <label class='col-sm-4 col-form-label'>感想</label>
+          <div class='col-sm-8 d-flex align-items-center'>
+            {{ movie.get('feeling') if movie.get('feeling') else '' }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class='text-center'>
+      <a href={{ url_for('index.home') }} class='btn btn-success w-25'>ホームへ</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

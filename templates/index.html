@@ -9,32 +9,53 @@
     #}
     <div class="card-group">
       <div class='row'>
-        {% for result in db['results'] %}
-          {% set is_watched = True if result['properties']['Status']['select']['name']=='Watched' else False %}
+        {% for movie in movies %}
           <div class='p-2 col-md-4'>
-            <div class="card h-100 {{ 'border-success' if is_watched else 'border-primary' }}">
+            <div class="card h-100 border-3 {{ 'border-success' if movie.has_watched else 'border-primary' }}">
               <div class='row no-gutters'>
+                {#
+                ##### 映画ポスター #####
+                #}
                 <div class='col-md-4'>
                   <img class="bd-placeholder-img img-thumbnail"
-                      src={{ result['properties']['Cover']['files'][0]['external']['url'] }}>
+                      src={{ movie.cover_url }}>
                 </div>
+                {#
+                ##### 内容 #####
+                #}
                 <div class='col-md-8'>
                   <div class="card-body">
-                    <h5 class="card-title">{{ result['properties']['Title']['title'][0]['text']['content'] }}</h5>
-                    {% if is_watched %}
-                      <p class="card-text text-warning">{{ result['properties']['Rating']['select']['name'] }}</p>
+                    {#
+                    ##### 映画タイトル #####
+                    #}
+                    <h5 class="card-title">{{ movie.title }}</h5>
+                    {#
+                    ##### 評価 #####
+                    #}
+                    {% if movie.rating %}
+                      <p class='card-text text-warning'>{{ '★'*movie.rating }}</p>
+                    {% else %}
+                      <p class='card-text'>-</p>
+                    {% endif %}
+                    {#
+                    ##### 鑑賞済みか否か #####
+                    #}
+                    {% if movie.last_watched_at and movie.has_watched %}
                       <p class="card-text">
                         <small class="text-muted">
-                          Last watched at {{ result['properties']['Last Watched at']['date']['start'] }}
+                          Last watched at {{ movie.last_watched_at }}
                         </small>
                       </p>
-                    {% else %}
-                      <p>-</p>
+                    {% elif movie.has_watched %}
                       <p class="card-text">
-                        <small class="text-muted">Wanna watch</small>
+                        <small class="text-muted">Watched</small>
+                      </p>
+                    {% else %}
+                      <p class="card-text">
+                        <small class="text-muted">To Watch</small>
                       </p>
                     {% endif %}
-                    <a href='#' class='card-link'>編集</a>
+                    <a href={{ url_for('index.edit', page_id=movie.id) }} class='card-link'>編集</a>
                   </div>
                 </div>
               </div>
