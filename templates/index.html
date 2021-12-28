@@ -7,62 +7,73 @@
     {#
     ##### カード #####
     #}
-    <div class="card-group">
-      <div class='row'>
-        {% for movie in movies %}
-          <div class='p-2 col-md-4'>
-            <div class="card h-100 border-3 {{ 'border-success' if movie.has_watched else 'border-primary' }}">
-              <div class='row no-gutters'>
+    <div class='card-columns'>
+      {% for movie in movies %}
+        <div class="card bg-dark {{ 'border-secondary' if movie.has_watched else 'border-white' }}">
+          <div class='row no-gutters'>
+            {#
+            ##### 映画ポスター #####
+            #}
+            <div class='col-md-4'>
+              <img src={{ movie.cover_url }} class='img-fluid'>
+            </div>
+            {#
+            ##### 映画内容 #####
+            #}
+            <div class='col-md-8'>
+              <div class='card-body'>
                 {#
-                ##### 映画ポスター #####
+                ##### 映画タイトル #####
                 #}
-                <div class='col-md-4'>
-                  <img class="bd-placeholder-img img-thumbnail"
-                      src={{ movie.cover_url }}>
-                </div>
+                <h5 class='card-title text-light'>{{ movie.title }}</h5>
                 {#
-                ##### 内容 #####
+                ##### 映画評価 #####
                 #}
-                <div class='col-md-8'>
-                  <div class="card-body">
-                    {#
-                    ##### 映画タイトル #####
-                    #}
-                    <h5 class="card-title">{{ movie.title }}</h5>
-                    {#
-                    ##### 評価 #####
-                    #}
-                    {% if movie.rating %}
-                      <p class='card-text text-warning'>{{ '★'*movie.rating }}</p>
-                    {% else %}
-                      <p class='card-text'>-</p>
-                    {% endif %}
-                    {#
-                    ##### 鑑賞済みか否か #####
-                    #}
-                    {% if movie.last_watched_at and movie.has_watched %}
-                      <p class="card-text">
-                        <small class="text-muted">
-                          Last watched at {{ movie.last_watched_at }}
-                        </small>
-                      </p>
-                    {% elif movie.has_watched %}
-                      <p class="card-text">
-                        <small class="text-muted">Watched</small>
-                      </p>
-                    {% else %}
-                      <p class="card-text">
-                        <small class="text-muted">To Watch</small>
-                      </p>
-                    {% endif %}
-                    <a href={{ url_for('index.edit', page_id=movie.id) }} class='card-link'>編集</a>
+                {% if movie.rating %}
+                  <p class='card-text text-warning'>{{ '★'*movie.rating }}</p>
+                {% else %}
+                  <p class='card-text text-secondary'>-----</p>
+                {% endif %}
+                {#
+                ##### 映画ジャンル #####
+                #}
+                {% if movie.genres %}
+                  {% for genre in movie.genres %}
+                    <div class='badge badge-info'>
+                      {{ genre }}
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <div class='badge badge-secondary'>
+                    ジャンル分けなし
                   </div>
-                </div>
+                {% endif %}
+                {#
+                ##### 鑑賞済みか否か #####
+                #}
+                {% if movie.last_watched_at and movie.has_watched %}
+                  <p class='card-text'>
+                    <small class='text-muted'>
+                      Last watched at {{ movie.last_watched_at }}
+                    </small>
+                  </p>
+                {% elif movie.has_watched %}
+                  <p class="card-text">
+                    <small class="text-muted">Watched</small>
+                  </p>
+                {% else %}
+                  <p class="card-text">
+                    <small class="text-muted">To Watch</small>
+                  </p>
+                {% endif %}
               </div>
             </div>
           </div>
-        {% endfor %}
-      </div>
+          <div class='card-footer text-center'>
+            <a href={{ url_for('index.edit', page_id=movie.id) }} class='card-link'>編集</a>
+          </div>
+        </div>
+      {% endfor %}
     </div>
   </div>
 </div>

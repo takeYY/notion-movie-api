@@ -11,7 +11,7 @@
         #}
         <div class='col-md-4'>
           <img src={{ movie.get('cover_url') }}
-              class='img-thumbnail' width='100%'>
+              class='img-fluid' width='100%'>
         </div>
 
         <div class='col-md-8'>
@@ -26,7 +26,7 @@
               　タイトル
             </label>
             <div class='col-sm-8'>
-              <input type='text' class='form-control w-50' name='title'
+              <input type='text' class='form-control w-50 bg-dark text-light' name='title'
                   value={{ movie.get('title') }} required>
             </div>
           </div>
@@ -66,7 +66,7 @@
               　評価
             </label>
             <div class='col-sm-8'>
-              <select name='rating' class='form-control'>
+              <select name='rating' class='form-control bg-dark text-light'>
                 <option value='0' {{ 'selected' if not movie.get('rating') else '' }}>-</option>
                 {% for i in range(5) %}
                   <option value={{ loop.revindex }}
@@ -114,7 +114,7 @@
               　視聴回数
             </label>
             <div class='col-sm-8'>
-              <input type='number' class='form-control w-50' name='views'
+              <input type='number' class='form-control w-50 bg-dark text-light' name='views'
                   value={{ movie.get('views') }}>
             </div>
           </div>
@@ -130,7 +130,7 @@
               　初鑑賞日
             </label>
             <div class='col-sm-8'>
-              <input type='date' class='form-control w-50' name='first-watched-at'
+              <input type='date' class='form-control w-50 bg-dark text-light' name='first-watched-at'
                   value={{ movie.get('first_watched_at') }}>
             </div>
           </div>
@@ -146,7 +146,7 @@
               　最終鑑賞日
             </label>
             <div class='col-sm-8'>
-              <input type='date' class='form-control w-50' name='last-watched-at'
+              <input type='date' class='form-control w-50 bg-dark text-light' name='last-watched-at'
                   value={{ movie.get('last_watched_at') }}>
             </div>
           </div>
@@ -162,7 +162,7 @@
               　感想
             </label>
             <div class='col-sm-8'>
-              <textarea class='form-control'
+              <textarea class='form-control bg-dark text-light'
                   name='feeling'>{{ movie.get('feeling') if movie.get('feeling') else '' }}</textarea>
             </div>
           </div>
