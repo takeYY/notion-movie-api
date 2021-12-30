@@ -68,6 +68,7 @@ class Movie:
 
     def set_params_by_form(self, form: dict, session: dict):
         self.id: str = session.get('page_id')
+        self.tmdb_id: str = session.get('tmdb_id')
         self.title: str = form.get('title')
         self.cover_url: str = session.get('cover_url')
         self.rating: int = int(form.get('rating', 0))

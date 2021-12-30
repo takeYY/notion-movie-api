@@ -7,6 +7,16 @@ from src.mecab_token import tokenize
 from src.calculate import calc_movie_similarity
 
 
+def search_a_movie_by_tmdb(tmdb_id: str = '144'):
+    search_movie_uri = f'https://api.themoviedb.org/3/movie/'
+    query_data = {
+        'language': 'ja-JP'
+    }
+    query = urllib.parse.urlencode(query_data)
+
+    return requests.get(f'{search_movie_uri}{tmdb_id}?api_key={os.environ.get("TMDB_KEY")}&{query}').json()
+
+
 def search_movies_by_tmdb(title: str = '', page: int = 1):
     search_uri = 'https://api.themoviedb.org/3/search/movie'
     query_data = {

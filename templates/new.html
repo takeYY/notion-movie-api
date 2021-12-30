@@ -4,13 +4,13 @@
   <h3 class='text-center'>{{basic_data.get('title')}}</h3>
 
   <div class='container-fluid'>
-    <form action={{ url_for('index.update', page_id=page_id) }} method=post>
+    <form action={{ url_for('index.create', tmdb_id=tmdb_id) }} method=post>
       <div class='my-4 row'>
         {#
         ##### ポスター画像 ######
         #}
         <div class='col-md-4'>
-          <img src={{ movie.get('cover_url') }}
+          <img src={{ movie.get('poster_path') }}
               class='img-fluid' width='100%'>
         </div>
 
@@ -43,13 +43,11 @@
             </label>
             <div class='col-sm-8 d-flex align-items-center'>
               <div class='form-check form-check-inline'>
-                <input class='form-check-input' type='radio' name='status' id='status-watched' value='Watched'
-                    {{ 'checked' if movie.get('has_watched') else '' }}>
+                <input class='form-check-input' type='radio' name='status' id='status-watched' value='Watched' checked>
                 <label class='form-check-label' for='status-watched'>Watched</label>
               </div>
               <div class='form-check form-check-inline'>
-                <input class='form-check-input' type='radio' name='status' id='status-to-watch' value='To Watch'
-                    {{ 'checked' if not movie.get('has_watched') else '' }}>
+                <input class='form-check-input' type='radio' name='status' id='status-to-watch' value='To Watch'>
                 <label class='form-check-label' for='status-to-watch'>To Watch</label>
               </div>
             </div>
@@ -67,12 +65,9 @@
             </label>
             <div class='col-sm-8'>
               <select name='rating' class='form-control bg-dark text-light'>
-                <option value='0' {{ 'selected' if not movie.get('rating') else '' }}>-</option>
+                <option value='0'>-</option>
                 {% for i in range(5) %}
-                  <option value={{ loop.revindex }}
-                      {% if movie.get('rating') %}
-                        {{ 'selected' if movie.get('rating') == loop.revindex else '' }}
-                      {% endif %}>
+                  <option value={{ loop.revindex }}>
                         {{loop.revindex}}: {{ '★'*loop.revindex }}
                   </option>
                 {% endfor %}
@@ -114,8 +109,7 @@
               　視聴回数
             </label>
             <div class='col-sm-8'>
-              <input type='number' class='form-control w-50 bg-dark text-light' name='views'
-                  value={{ movie.get('views') }}>
+              <input type='number' class='form-control w-50 bg-dark text-light' name='views'>
             </div>
           </div>
           <hr>
@@ -131,7 +125,7 @@
             </label>
             <div class='col-sm-8'>
               <input type='date' class='form-control w-50 bg-dark text-light' name='first-watched-at'
-                  value={{ movie.get('first_watched_at') }}>
+                  value='2016-12-25'>
             </div>
           </div>
 
@@ -146,8 +140,7 @@
               　最終鑑賞日
             </label>
             <div class='col-sm-8'>
-              <input type='date' class='form-control w-50 bg-dark text-light' name='last-watched-at'
-                  value={{ movie.get('last_watched_at') }}>
+              <input type='date' class='form-control w-50 bg-dark text-light' name='last-watched-at'>
             </div>
           </div>
 
@@ -163,13 +156,13 @@
             </label>
             <div class='col-sm-8'>
               <textarea class='form-control bg-dark text-light'
-                  name='feeling'>{{ movie.get('feeling') if movie.get('feeling') else '' }}</textarea>
+                  name='feeling'></textarea>
             </div>
           </div>
         </div>
       </div>
       <div class='text-center'>
-        <button type='submit' class='btn btn-primary w-25'>更新</button>
+        <button type='submit' class='btn btn-primary w-25'>マイリストに追加</button>
       </div>
     </form>
   </div>

@@ -139,8 +139,7 @@
               {% if has_mylist %}
                 <a href={{ url_for('index.edit', page_id=movie.id) }} class='card-link'>編集</a>
               {% else %}
-                {#<a href={{ url_for('index.edit', page_id=movie.id) }} class='card-link'>編集</a>#}
-                追加ボタン
+                <a href={{ url_for('index.new', tmdb_id=movie.tmdb_id) }} class='card-link'>マイリストに追加</a>
               {% endif %}
             </div>
           </div>

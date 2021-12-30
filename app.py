@@ -4,9 +4,10 @@ from datetime import timedelta
 import pandas as pd
 from notion_client import Client
 from models.movie_class import Movie
-from src.get_movie import get_genres_dict
+from src.get_movie import get_genres_dict, tmdb2notion_genres, tmdb_poster_path_uri
+from src.create_movie import create_movie
 from src.update_movie import update_movie
-from src.search_movies import search_movies
+from src.search_movies import search_a_movie_by_tmdb, search_movies
 from src.dataframe import notion2df, processing_tmdb_df
 
 app = Flask(__name__)
@@ -110,6 +111,44 @@ def search():
                            basic_data=basic_data,
                            searched_title=title,
                            movies=movies)
+
+
+@index_page.route('/new/<string:tmdb_id>')
+def new(tmdb_id: str):
+    basic_data = dict(title='マイリストに追加', active_url='new_movie')
+
+    movie = search_a_movie_by_tmdb(tmdb_id)
+    movie['title'] = movie.get('title').replace(' ', '：').replace('／', '：')
+    movie['poster_path'] = tmdb_poster_path_uri() + movie.get('poster_path')
+    if movie.get('genres'):
+        movie['genres'] = [tmdb2notion_genres().get(str(genre.get('id')))
+                           for genre in movie.get('genres', {'a': 'b'})]
+
+    # session登録
+    session.clear()
+    session['tmdb_id'] = tmdb_id
+    session['cover_url'] = movie.get('poster_path')
+
+    return render_template('new.html',
+                           basic_data=basic_data,
+                           tmdb_id=tmdb_id,
+                           movie=movie,
+                           genres=get_genres_dict())
+
+
+@index_page.route('/created/<string:tmdb_id>', methods=['POST'])
+def create(tmdb_id: str):
+    basic_data = dict(title='追加完了', active_url='created_movie')
+
+    movie = Movie(form=request.form, session=session)
+    create_information = create_movie(movie)
+    result = notion.pages.create(**create_information)
+
+    movie = Movie(result=result)
+
+    return render_template('created.html',
+                           basic_data=basic_data,
+                           movie=movie.__dict__)
 
 
 app.register_blueprint(index_page)
