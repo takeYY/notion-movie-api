@@ -1,3 +1,5 @@
 notion-client
 flask
 mecab-python3==0.7
+requests
+pandas

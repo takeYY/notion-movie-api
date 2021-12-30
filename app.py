@@ -3,7 +3,9 @@ import os
 from datetime import timedelta
 from notion_client import Client
 from models.movie_class import Movie
-from src.movie import update_movie, get_genres_dict
+from src.get_movie import get_genres_dict
+from src.update_movie import update_movie
+from src.search_movies import search_movies
 
 
 app = Flask(__name__)
@@ -69,6 +71,29 @@ def update(page_id: str):
                            basic_data=basic_data,
                            movie=movie.__dict__,
                            genres=get_genres_dict())
+
+
+@index_page.route('/search', methods=['POST'])
+def search():
+    basic_data = dict(title='検索結果', active_url='search_movies')
+
+    title = request.form.get('title')
+    movies = search_movies(title)
+
+    db = notion.databases.query(
+        **{
+            'database_id': os.environ.get('DB_ID')
+        }
+    )
+
+    notion_movies = [Movie(result=result) for result in db['results']]
+    mylist = {movie.tmdb_id: movie for movie in notion_movies}
+
+    return render_template('search.html',
+                           basic_data=basic_data,
+                           searched_title=title,
+                           movies=movies,
+                           mylist=mylist)
 
 
 app.register_blueprint(index_page)

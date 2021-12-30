@@ -9,6 +9,8 @@ class Movie:
     ----------
     id: str
       データID
+    tmdb_id: str
+      TMDbのID
     title: str
       映画タイトル
     cover_url: str
@@ -30,17 +32,20 @@ class Movie:
 
     """
 
-    def __init__(self, result: dict = {}, form: dict = {}, session: dict = {}):
+    def __init__(self, result: dict = {}, form: dict = {}, session: dict = {}, search: dict = {}, point: float = 0.00):
         if result:
             self.set_params_by_result(result)
         elif form:
             self.set_params_by_form(form, session)
+        elif search:
+            self.set_params_by_search(search, point)
         else:
             pass
 
     def set_params_by_result(self, result: dict):
         self.id: str = result.get('id')
         properties = result['properties']
+        self.tmdb_id: str = str(properties['TMDb ID']['number'])
         self.title: str = properties['Title']['title'][0]['text']['content']
         self.cover_url: str = properties['Cover']['files'][0]['external']['url']
         self.rating: int = len(properties['Rating']['select']['name'])\
@@ -86,3 +91,17 @@ class Movie:
         self.feeling: str = form.get('feeling')\
             if form.get('feeling')\
             else ''
+
+    def set_params_by_search(self, search: dict, point: float):
+        self.tmdb_id: str = str(search.get('id'))
+        self.title: str = search.get('title')
+        self.poster_path: str = f"https://www.themoviedb.org/t/p/w600_and_h900_bestv2/{search.get('poster_path')}"\
+            if search.get('poster_path')\
+            else None
+        self.release_date: date = date.fromisoformat(search.get('release_date'))\
+            if search.get('release_date')\
+            else 'N/A'
+        self.overview: str = search.get('overview')\
+            if search.get('overview')\
+            else 'N/A'
+        self.point: float = point
