@@ -1,12 +1,13 @@
 from flask import Flask, Blueprint, render_template, request, session, redirect, url_for
 import os
 from datetime import timedelta
+import pandas as pd
 from notion_client import Client
 from models.movie_class import Movie
 from src.get_movie import get_genres_dict
 from src.update_movie import update_movie
 from src.search_movies import search_movies
-
+from src.dataframe import notion2df, processing_tmdb_df
 
 app = Flask(__name__)
 # SECRET_KEYを設定
@@ -78,7 +79,17 @@ def search():
     basic_data = dict(title='検索結果', active_url='search_movies')
 
     title = request.form.get('title')
-    movies = search_movies(title)
+    # TMDb APIで映画検索し、DataFrameで格納
+    tmdb_df: pd.DataFrame = search_movies(title)
+    # 結果がない場合
+    if tmdb_df.empty:
+        return render_template('search.html',
+                               basic_data=basic_data,
+                               searched_title=title,
+                               movies=tmdb_df)
+
+    # 必要な情報のみに絞る
+    tmdb_df = processing_tmdb_df(tmdb_df)
 
     db = notion.databases.query(
         **{
@@ -86,14 +97,19 @@ def search():
         }
     )
 
-    notion_movies = [Movie(result=result) for result in db['results']]
-    mylist = {movie.tmdb_id: movie for movie in notion_movies}
+    notion_df: pd.DataFrame = notion2df(db.get('results'))
+    # TMDbのDFとnotionのDFを連結
+    movies = pd.merge(tmdb_df, notion_df, how='left', on='tmdb_id')
+    # 欠損値補完
+    movies = movies.fillna({
+        'cover_url': '',
+        'genres': ''
+    })
 
     return render_template('search.html',
                            basic_data=basic_data,
                            searched_title=title,
-                           movies=movies,
-                           mylist=mylist)
+                           movies=movies)
 
 
 app.register_blueprint(index_page)

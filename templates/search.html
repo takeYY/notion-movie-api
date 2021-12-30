@@ -4,13 +4,15 @@
   <h3 class='text-center'>{{basic_data.get('title')}}</h3>
 
   <div class='container-fluid'>
-    {% if movies %}
+    {% if movies.empty %}
+      <h5 class='text-center'>該当なし</h5>
+    {% else %}
       {#
-      ##### カード #####
+      1. # カード #
       #}
       <div class='card-columns'>
-        {% for movie in movies %}
-          {% if movie.tmdb_id in mylist.keys() %}
+        {% for movie in movies.itertuples() %}
+          {% if movie.cover_url %}
             {% set has_mylist = True %}
           {% else %}
             {% set has_mylist = False %}
@@ -18,20 +20,20 @@
           <div class="card bg-dark {{ 'border-info' if has_mylist else 'border-light' }}">
             <div class='row no-gutters'>
               {#
-              ##### カード左側 #####
+              1. ## カード左側 ##
               #}
               <div class='col-md-4'>
                 {#
-                ##### 映画ポスター #####
+                1. ### 映画ポスター ###
                 #}
                 <img class='img-fluid'
-                    src={{ mylist.get(movie.tmdb_id).cover_url if has_mylist else movie.poster_path }}>
+                    src={{ movie.cover_url if has_mylist else movie.poster_path }}>
                 {#
-                ##### TMDb ID #####
+                2. ### TMDb ID ###
                 #}
                 <small class='card-title text-muted'>TMDb ID:{{ movie.tmdb_id }}</small>
                 {#
-                ##### 類似度 #####
+                3. ### 類似度 ###
                 #}
                 <p class="card-text
                     {% if 0.8 <= movie.point %}
@@ -47,28 +49,29 @@
                 </p>
               </div>
               {#
-              ##### カード右側 #####
+              2. ## カード右側 ##
               #}
               <div class='col-md-8'>
                 <div class='card-body'>
                   {#
-                  ##### 映画タイトル #####
+                  1. ### 映画タイトル ###
                   #}
-                  <h5 class='card-title text-light'>{{ movie.title }}</h5>
+                  <h5 class='card-title text-light'>{{ movie.title_x }}</h5>
+                  {# 該当の映画がnotionに追加されている場合 #}
                   {% if has_mylist %}
                     {#
-                    ##### 映画評価 #####
+                    2. ### 映画評価 ###
                     #}
-                    {% if mylist.get(movie.tmdb_id).rating %}
-                      <p class='card-text text-warning'>{{ '★'*mylist.get(movie.tmdb_id).rating }}</p>
+                    {% if movie.rating %}
+                      <p class='card-text text-warning'>{{ '★'*movie.rating|int }}</p>
                     {% else %}
                       <p class='card-text text-secondary'>-----</p>
                     {% endif %}
                     {#
-                    ##### 映画ジャンル #####
+                    3. ### 映画ジャンル ###
                     #}
-                    {% if mylist.get(movie.tmdb_id).genres %}
-                      {% for genre in mylist.get(movie.tmdb_id).genres %}
+                    {% if movie.genres %}
+                      {% for genre in movie.genres %}
                         <div class='badge badge-info'>
                           {{ genre }}
                         </div>
@@ -79,15 +82,15 @@
                       </div>
                     {% endif %}
                     {#
-                    ##### 鑑賞済みか否か #####
+                    4. ### 鑑賞済みか否か ###
                     #}
-                    {% if mylist.get(movie.tmdb_id).last_watched_at and mylist.get(movie.tmdb_id).has_watched %}
+                    {% if movie.last_watched_at and movie.has_watched %}
                       <p class='card-text'>
                         <small class='text-muted'>
-                          Last watched at {{ mylist.get(movie.tmdb_id).last_watched_at }}
+                          Last watched at {{ movie.last_watched_at }}
                         </small>
                       </p>
-                    {% elif mylist.get(movie.tmdb_id).has_watched %}
+                    {% elif movie.has_watched %}
                       <p class="card-text">
                         <small class="text-muted">Watched</small>
                       </p>
@@ -96,18 +99,37 @@
                         <small class="text-muted">To Watch</small>
                       </p>
                     {% endif %}
+                  {# 該当の映画がnotionにない場合 #}
                   {% else %}
                     {#
-                    ##### 公開日 #####
+                    2. ### 公開日 ###
                     #}
-                    <p class='card-text text-light'>
-                      公開日：{{ movie.release_date }}
+                    <p class='card-text'>
+                      <small class='text-muted'>
+                        公開日：{{ movie.release_date }}
+                      </small>
                     </p>
                     {#
-                    ##### 概要 #####
+                    3. ### ジャンル ###
                     #}
-                    <p class='card-text text-muted' title="{{ movie.overview }}">
-                      {{ movie.overview|truncate(34) }}
+                    {% if movie.genre_ids %}
+                      {% for genre in movie.genre_ids %}
+                        <div class='badge badge-info'>
+                          {{ genre }}
+                        </div>
+                      {% endfor %}
+                    {% else %}
+                      <div class='badge badge-secondary'>
+                        ジャンル分けなし
+                      </div>
+                    {% endif %}
+                    {#
+                    4. ### 概要 ###
+                    #}
+                    <p class='card-text'>
+                      <small class='text-muted' title="{{ movie.overview }}">
+                        {{ movie.overview|truncate(54) }}
+                      </small>
                     </p>
                   {% endif %}
                 </div>
@@ -115,7 +137,7 @@
             </div>
             <div class='card-footer text-center'>
               {% if has_mylist %}
-                <a href={{ url_for('index.edit', page_id=mylist.get(movie.tmdb_id).id) }} class='card-link'>編集</a>
+                <a href={{ url_for('index.edit', page_id=movie.id) }} class='card-link'>編集</a>
               {% else %}
                 {#<a href={{ url_for('index.edit', page_id=movie.id) }} class='card-link'>編集</a>#}
                 追加ボタン
@@ -124,8 +146,6 @@
           </div>
         {% endfor %}
       </div>
-    {% else %}
-      <h6 class='text-center'>該当なし</h6>
     {% endif %}
   </div>
 </div>
