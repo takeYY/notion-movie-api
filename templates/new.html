@@ -125,7 +125,9 @@
             </label>
             <div class='col-sm-8'>
               <input type='date' class='form-control w-50 bg-dark text-light' name='first-watched-at'
-                  value='2016-12-25'>
+                  value={{ movie.get('release_date')
+                  if '2016-12-25' < movie.get('release_date', '2016-12-24')
+                  else '2016-12-25' }}>
             </div>
           </div>
 
