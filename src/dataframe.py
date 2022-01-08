@@ -1,4 +1,5 @@
 import pandas as pd
+import json
 from datetime import date
 from src.get_movie import tmdb_genres, tmdb_poster_path_uri
 
@@ -7,7 +8,7 @@ def tmdb2df(results: dict):
     return pd.DataFrame(results)
 
 
-def notion2df(results: dict):
+def notion2df(results: list):
     contents = []
     for result in results:
         properties = result.get('properties')
@@ -39,6 +40,13 @@ def notion2df(results: dict):
     return pd.DataFrame(contents)
 
 
+def json2df():
+    with open('json/notion_movies.json') as f:
+        contents = json.load(f)
+
+    return pd.DataFrame(contents)
+
+
 def ids2genres(genre_ids: list):
     return [tmdb_genres().get(str(genre_id)) for genre_id in genre_ids]
 
@@ -56,3 +64,11 @@ def processing_tmdb_df(df: pd):
         else '')
     # 必要な情報のみに絞り、idをtmdb_idに変更
     return df[target_columns].rename(columns={'id': 'tmdb_id'})
+
+
+def date2str(df: pd.DataFrame, columns: list):
+    for column in columns:
+        df[column] = pd.to_datetime(df[column], errors='coerce')\
+                       .dt.strftime('%Y-%m-%d')
+
+    return df

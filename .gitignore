@@ -130,3 +130,9 @@ dmypy.json
 
 # environment
 *.env
+
+# json
+json
+
+# vscode
+.vscode

@@ -8,7 +8,7 @@
     ##### カード #####
     #}
     <div class='card-columns'>
-      {% for movie in movies %}
+      {% for movie in movies.itertuples() %}
         <div class="card bg-dark {{ 'border-secondary' if movie.has_watched else 'border-white' }}">
           <div class='row no-gutters'>
             {#
@@ -30,7 +30,7 @@
                 ##### 映画評価 #####
                 #}
                 {% if movie.rating %}
-                  <p class='card-text text-warning'>{{ '★'*movie.rating }}</p>
+                  <p class='card-text text-warning'>{{ '★'*movie.rating|int }}</p>
                 {% else %}
                   <p class='card-text text-secondary'>-----</p>
                 {% endif %}

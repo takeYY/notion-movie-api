@@ -3,12 +3,14 @@ import os
 from datetime import timedelta
 import pandas as pd
 from notion_client import Client
+import json
 from models.movie_class import Movie
 from src.get_movie import get_genres_dict, tmdb2notion_genres, tmdb_poster_path_uri
 from src.create_movie import create_movie
 from src.update_movie import update_movie
 from src.search_movies import search_a_movie_by_tmdb, search_movies
-from src.dataframe import notion2df, processing_tmdb_df
+from src.dataframe import json2df, processing_tmdb_df
+from src.json import update_json
 
 app = Flask(__name__)
 # SECRET_KEYを設定
@@ -24,13 +26,7 @@ index_page = Blueprint('index', __name__, url_prefix='/')
 def home():
     basic_data = dict(title='ホーム', active_url='home')
 
-    db = notion.databases.query(
-        **{
-            'database_id': os.environ.get('DB_ID')
-        }
-    )
-
-    movies = [Movie(result=result) for result in db['results']]
+    movies = json2df()
 
     return render_template('index.html',
                            basic_data=basic_data,
@@ -69,6 +65,9 @@ def update(page_id: str):
 
     movie = Movie(result=result)
 
+    # jsonを更新
+    update_json()
+
     return render_template('updated.html',
                            basic_data=basic_data,
                            movie=movie.__dict__,
@@ -92,13 +91,8 @@ def search():
     # 必要な情報のみに絞る
     tmdb_df = processing_tmdb_df(tmdb_df)
 
-    db = notion.databases.query(
-        **{
-            'database_id': os.environ.get('DB_ID')
-        }
-    )
-
-    notion_df: pd.DataFrame = notion2df(db.get('results'))
+    # Notionに登録されている情報を取得
+    notion_df = json2df()
     # TMDbのDFとnotionのDFを連結
     movies = pd.merge(tmdb_df, notion_df, how='left', on='tmdb_id')
     # 欠損値補完
@@ -145,6 +139,9 @@ def create(tmdb_id: str):
     result = notion.pages.create(**create_information)
 
     movie = Movie(result=result)
+
+    # jsonを更新
+    update_json()
 
     return render_template('created.html',
                            basic_data=basic_data,
