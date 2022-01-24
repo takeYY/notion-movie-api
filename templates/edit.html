@@ -131,7 +131,8 @@
             </label>
             <div class='col-sm-8'>
               <input type='date' class='form-control w-50 bg-dark text-light' name='first-watched-at'
-                  value={{ movie.get('first_watched_at') }}>
+                  value={{ movie.get('first_watched_at') }}
+                  {{ 'disabled' if movie.get('first_watched_at') else '' }}>
             </div>
           </div>
 
