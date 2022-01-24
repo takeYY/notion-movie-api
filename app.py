@@ -20,6 +20,7 @@ app.permanent_session_lifetime = timedelta(minutes=30)
 # notionの設定
 notion = Client(auth=os.environ['NOTION_TOKEN'])
 index_page = Blueprint('index', __name__, url_prefix='/')
+mylist_page = Blueprint('mylist', __name__, url_prefix='/mylist')
 
 
 @index_page.route('')
@@ -148,8 +149,34 @@ def create(tmdb_id: str):
                            movie=movie.__dict__)
 
 
-app.register_blueprint(index_page)
+@mylist_page.route('/watched', methods=['GET'])
+def show_watched():
+    basic_data = dict(title='Watched', active_url='watched')
 
+    movies = json2df()
+    # 観た映画のみに絞る
+    movies = movies.query(' has_watched ').reset_index(drop=True)
+
+    return render_template('mylist/watched.html',
+                           basic_data=basic_data,
+                           movies=movies)
+
+
+@mylist_page.route('/to-watch', methods=['GET'])
+def show_to_watch():
+    basic_data = dict(title='To Watch', active_url='to_watched')
+
+    movies = json2df()
+    # 観た映画のみに絞る
+    movies = movies.query(' not has_watched ').reset_index(drop=True)
+
+    return render_template('mylist/to-watch.html',
+                           basic_data=basic_data,
+                           movies=movies)
+
+
+app.register_blueprint(index_page)
+app.register_blueprint(mylist_page)
 
 # おまじない
 if __name__ == "__main__":

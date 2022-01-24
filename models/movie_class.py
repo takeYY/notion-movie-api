@@ -86,7 +86,7 @@ class Movie:
             else None
         self.last_watched_at: date = date.fromisoformat(form.get('last-watched-at'))\
             if form.get('last-watched-at')\
-            else None
+            else form.get('first-watched-at')
         self.feeling: str = form.get('feeling')\
             if form.get('feeling')\
             else ''
