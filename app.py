@@ -187,7 +187,7 @@ def show_watched():
                            queries=queries)
 
 
-@mylist_page.route('/to-watch', methods=['GET'])
+@mylist_page.route('/to-watch', methods=['GET', 'POST'])
 def show_to_watch():
     basic_data = dict(title='To Watch', active_url='to_watched')
 
@@ -195,9 +195,29 @@ def show_to_watch():
     # 観た映画のみに絞る
     movies = movies.query(' not has_watched ').reset_index(drop=True)
 
+    if request.method == 'GET':
+        return render_template('mylist/to-watch.html',
+                               basic_data=basic_data,
+                               movies=movies,
+                               genres=get_genres_dict())
+
+    form = request.form
+    title = form.get('title')
+    genres = form.getlist('genres')
+    and_search = True if int(form.get('genres_and_search'))\
+        else False
+    if genres:
+        movies = genres_limitation(movies, genres, and_search)
+    if title:
+        movies = title_limitation(movies, title)
+    queries = dict(title=title,
+                   genres=genres,
+                   genres_and_search=and_search)
     return render_template('mylist/to-watch.html',
                            basic_data=basic_data,
-                           movies=movies)
+                           movies=movies,
+                           genres=get_genres_dict(),
+                           queries=queries)
 
 
 app.register_blueprint(index_page)
