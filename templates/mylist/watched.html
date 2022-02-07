@@ -29,15 +29,15 @@
         ##### ジャンル #####
         #}
         <div class='row'>
-          <label class='col-md-3'>ジャンル</label>
+          <label class='col-auto mr-auto'>ジャンル</label>
           <div class='form-group'>
             <div class='row'>
-              <div class='col-md-6'>
+              <div class='col-auto'>
                 <input type='radio' name='genres_and_search' value=0 class='form-check-input' id='genres_or'
                     {{ 'checked' if not queries or queries and not queries.get('genres_and_search') }}>
                 <label class='form-check-label' for='genres_or'>OR</label>
               </div>
-              <div class='col-md-6'>
+              <div class='col-auto'>
                 <input type='radio' name='genres_and_search' value=1 class='form-check-input' id='genres_and'
                     {{ 'checked' if queries and queries.get('genres_and_search') }}>
                 <label class='form-check-label' for='genres_and'>AND</label>
