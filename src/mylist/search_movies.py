@@ -1,4 +1,6 @@
 import pandas as pd
+from src.mecab_token import tokenize
+from src.calculate import calc_movie_similarity
 
 
 def and_or_search(data: list, target: list, is_and: bool) -> bool:
@@ -10,6 +12,13 @@ def and_or_search(data: list, target: list, is_and: bool) -> bool:
             return True
 
     return False
+
+
+def title_limitation(movies: pd.DataFrame, title: list) -> pd.DataFrame:
+    # 類似度計算
+    movies['point'] = movies['title'].map(lambda tmdb_title: calc_movie_similarity(tokenize(title),
+                                                                                   tokenize(tmdb_title)))
+    return movies.query(' 0.0 < point ').sort_values('point', ascending=False)
 
 
 def rating_limitation(movies: pd.DataFrame, rating: list) -> pd.DataFrame:
