@@ -10,6 +10,22 @@
     <div class='mb-3'>
       <form action={{ url_for('mylist.show_watched') }} method='post'>
         {#
+        ##### 評価 #####
+        #}
+        <label>評価</label>
+        <div class='form-group'>
+          <div class='pl-3 row'>
+            {% for idx in range(5, 0, -1) %}
+              <div class='form-check col-md-2'>
+                <input class='form-check-input' type='checkbox' name='rating' id='rating-{{idx}}' value={{idx}}
+                    {{ 'checked' if queries and idx in queries.get('rating') }}>
+                <label class='form-check-label' for='rating-{{idx}}'>{{'★'*idx}}</label>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        {#
         ##### ジャンル #####
         #}
         <div class='row'>

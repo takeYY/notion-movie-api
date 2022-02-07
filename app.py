@@ -11,7 +11,7 @@ from src.update_movie import update_movie
 from src.search_movies import search_a_movie_by_tmdb, search_movies
 from src.dataframe import json2df, processing_tmdb_df
 from src.json import update_json
-from src.mylist.search_movies import genres_limitation
+from src.mylist.search_movies import rating_limitation, genres_limitation
 
 app = Flask(__name__)
 # SECRET_KEYを設定
@@ -166,10 +166,15 @@ def show_watched():
 
     form = request.form
     genres = form.getlist('genres')
+    rating = list(map(int, form.getlist('rating')))
     and_search = True if int(form.get('genres_and_search'))\
         else False
-    movies = genres_limitation(movies, genres, and_search)
-    queries = dict(genres=genres,
+    if rating:
+        movies = rating_limitation(movies, rating)
+    if genres:
+        movies = genres_limitation(movies, genres, and_search)
+    queries = dict(rating=rating,
+                   genres=genres,
                    genres_and_search=and_search)
     return render_template('mylist/watched.html',
                            basic_data=basic_data,
