@@ -48,6 +48,8 @@
                 data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
                 Mylist</a>
             <div class='dropdown-menu' aria-labelledby='navbarDropdownMenuLink'>
+              <a class='dropdown-item' href={{ url_for('mylist.show_all') }}>All</a>
+              <hr>
               <a class='dropdown-item' href={{ url_for('mylist.show_watched') }}>Watched</a>
               <a class='dropdown-item' href={{ url_for('mylist.show_to_watch') }}>To Watch</a>
             </div>

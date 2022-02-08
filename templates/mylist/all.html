@@ -1,0 +1,150 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class='container pb-4'>
+  <h3 class='text-center'>{{basic_data.get('title')}}</h3>
+
+  <div class='container-fluid'>
+    {#
+    ##### マイリスト検索 #####
+    #}
+    <div class='mb-3'>
+      <form action={{ url_for('mylist.show_all') }} method='post'>
+        {#
+        ##### タイトル #####
+        #}
+        <label>タイトル</label>
+        <div class='form-group'>
+          <input type='text' name='title' class='form-control bg-dark text-light border-secondary w-50'
+              value="{{ queries.get('title', '') if queries }}">
+        </div>
+        {#
+        ##### 評価 #####
+        #}
+        <label>評価</label>
+        <div class='form-group'>
+          <div class='pl-3 row'>
+            {% for idx in range(5, 0, -1) %}
+              <div class='form-check col-md-2'>
+                <input class='form-check-input' type='checkbox' name='rating' id='rating-{{idx}}' value={{idx}}
+                    {{ 'checked' if queries and idx in queries.get('rating') }}>
+                <label class='form-check-label' for='rating-{{idx}}'>{{'★'*idx}}</label>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        {#
+        ##### ジャンル #####
+        #}
+        <div class='row'>
+          <label class='col-auto mr-auto'>ジャンル</label>
+          <div class='form-group'>
+            <div class='row'>
+              <div class='col-auto'>
+                <input type='radio' name='genres_and_search' value=0 class='form-check-input' id='genres_or'
+                    {{ 'checked' if not queries or queries and not queries.get('genres_and_search') }}>
+                <label class='form-check-label' for='genres_or'>OR</label>
+              </div>
+              <div class='col-auto'>
+                <input type='radio' name='genres_and_search' value=1 class='form-check-input' id='genres_and'
+                    {{ 'checked' if queries and queries.get('genres_and_search') }}>
+                <label class='form-check-label' for='genres_and'>AND</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class='form-group'>
+          <div class='pl-3 row'>
+            {% for key, value in genres.items() %}
+              <div class='form-check col-md-2'>
+                <input class='form-check-input' type='checkbox' name='genres' id='genre-{{key}}' value={{value}}
+                    {{ 'checked' if queries and value in queries.get('genres') }}>
+                <label class='form-check-label' for='genre-{{key}}'>{{value}}</label>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+        {#
+        ##### 可視化ボタン #####
+        #}
+        <div class='text-center'>
+          <button type='submit' class='btn btn-outline-primary'>検索</button>
+        </div>
+      </form>
+    </div>
+    <hr>
+
+    {#
+    ##### カード #####
+    #}
+    <div class='card-columns'>
+      {% for movie in movies.itertuples() %}
+        <div class="card bg-dark {{ 'border-secondary' if movie.has_watched else 'border-white' }}">
+          <div class='row no-gutters'>
+            {#
+            ##### 映画ポスター #####
+            #}
+            <div class='col-md-4'>
+              <img src={{ movie.cover_url }} class='img-fluid'>
+            </div>
+            {#
+            ##### 映画内容 #####
+            #}
+            <div class='col-md-8'>
+              <div class='card-body'>
+                {#
+                ##### 映画タイトル #####
+                #}
+                <h5 class='card-title text-light'>{{ movie.title }}</h5>
+                {#
+                ##### 映画評価 #####
+                #}
+                {% if movie.rating %}
+                  <p class='card-text text-warning'>{{ '★'*movie.rating|int }}</p>
+                {% else %}
+                  <p class='card-text text-secondary'>-----</p>
+                {% endif %}
+                {#
+                ##### 映画ジャンル #####
+                #}
+                {% if movie.genres %}
+                  {% for genre in movie.genres %}
+                    <div class='badge badge-info'>
+                      {{ genre }}
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <div class='badge badge-secondary'>
+                    ジャンル分けなし
+                  </div>
+                {% endif %}
+                {#
+                ##### 鑑賞済みか否か #####
+                #}
+                {% if movie.last_watched_at and movie.has_watched %}
+                  <p class='card-text'>
+                    <small class='text-muted'>
+                      Last watched at {{ movie.last_watched_at }}
+                    </small>
+                  </p>
+                {% elif movie.has_watched %}
+                  <p class="card-text">
+                    <small class="text-muted">Watched</small>
+                  </p>
+                {% else %}
+                  <p class="card-text">
+                    <small class="text-muted">To Watch</small>
+                  </p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <div class='card-footer text-center'>
+            <a href={{ url_for('index.edit', page_id=movie.id) }} class='card-link'>編集</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

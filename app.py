@@ -150,6 +150,43 @@ def create(tmdb_id: str):
                            movie=movie.__dict__)
 
 
+@mylist_page.route('/all', methods=['GET', 'POST'])
+def show_all():
+    basic_data = dict(title='マイリスト', active_url='mylist')
+
+    movies = json2df()
+
+    if request.method == 'GET':
+        return render_template('mylist/all.html',
+                               basic_data=basic_data,
+                               movies=movies,
+                               genres=get_genres_dict())
+
+    form = request.form
+    title = form.get('title')
+    genres = form.getlist('genres')
+    rating = list(map(int, form.getlist('rating')))
+    and_search = True if int(form.get('genres_and_search'))\
+        else False
+    if rating:
+        movies = movies.query(' rating == rating ').reset_index(drop=True)
+        movies = rating_limitation(movies, rating)
+    if genres:
+        movies = movies.query(' genres == genres ').reset_index(drop=True)
+        movies = genres_limitation(movies, genres, and_search)
+    if title:
+        movies = title_limitation(movies, title)
+    queries = dict(title=title,
+                   rating=rating,
+                   genres=genres,
+                   genres_and_search=and_search)
+    return render_template('mylist/all.html',
+                           basic_data=basic_data,
+                           movies=movies,
+                           genres=get_genres_dict(),
+                           queries=queries)
+
+
 @mylist_page.route('/watched', methods=['GET', 'POST'])
 def show_watched():
     basic_data = dict(title='Watched', active_url='watched')
