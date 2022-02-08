@@ -1,0 +1,39 @@
+{#
+  id_name: str
+    carouselのID
+  data: list of str
+    carouselで表示する画像URL
+  carousel_length: int
+    carouselの長さ
+  content_length: int
+    1つのcarousel内に表示するコンテンツ量
+#}
+
+<div id='{{id_name}}' class='carousel slide' data-ride='carousel'>
+  <ol class='carousel-indicators'>
+    {% for idx in range(carousel_length) %}
+      <li data-target='#{{id_name}}' data-slide-to='{{idx}}' class="{{ 'active' if idx==0 }}"></li>
+    {% endfor %}
+  </ol>
+  <div class='carousel-inner'>
+    {% for idx in range(carousel_length) %}
+      <div class="carousel-item {{ 'active' if idx==0 }}">
+        <div class='row'>
+          {% for i in range(content_length) %}
+            <div class='col-md-2'>
+              <img src={{ data[content_length*idx+i] }} class='img-fluid'>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <a class='carousel-control-prev' href='#{{id_name}}'' role='button' data-slide='prev'>
+    <span class='carousel-control-prev-icon' aria-hidden='true'></span>
+    <span class='sr-only'>Previous</span>
+  </a>
+  <a class='carousel-control-next' href='#{{id_name}}' role='button' data-slide='next'>
+    <span class='carousel-control-next-icon' aria-hidden='true'></span>
+    <span class='sr-only'>Next</span>
+  </a>
+</div>

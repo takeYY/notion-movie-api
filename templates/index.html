@@ -4,6 +4,22 @@
   <h3 class='text-center'>{{basic_data.get('title')}}</h3>
 
   <div class='container-fluid'>
+    <h5>最近観た映画</h5>
+    {% with id_name='recently-watched-movies', data=watched_covers, carousel_length=5, content_length=6 %}
+      {% include 'src/carousel_template.html' %}
+    {% endwith %}
+    <hr>
+    <h5>最近追加された映画</h5>
+    {% with id_name='recently-added-movies', data=movies['cover_url']|list, carousel_length=5, content_length=6 %}
+      {% include 'src/carousel_template.html' %}
+    {% endwith %}
+    <hr>
+    <h5>観たい映画リスト</h5>
+    {% with id_name='to-watch-movies', data=to_watch_covers, carousel_length=3, content_length=6 %}
+      {% include 'src/carousel_template.html' %}
+    {% endwith %}
+    <hr>
+
     {#
     ##### カード #####
     #}

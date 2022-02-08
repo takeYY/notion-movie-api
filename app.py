@@ -29,10 +29,16 @@ def home():
     basic_data = dict(title='ホーム', active_url='home')
 
     movies = json2df()
+    watched_covers = movies.sort_values('last_watched_at',
+                                        ascending=False)[:30]['cover_url'].tolist()
+    to_watch_covers = movies.query(' not has_watched ')\
+                            .sample(30)['cover_url'].tolist()
 
     return render_template('index.html',
                            basic_data=basic_data,
-                           movies=movies)
+                           movies=movies[:50],
+                           watched_covers=watched_covers,
+                           to_watch_covers=to_watch_covers)
 
 
 @index_page.route('/edit/<string:page_id>')
