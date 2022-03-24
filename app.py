@@ -28,7 +28,11 @@ mylist_page = Blueprint('mylist', __name__, url_prefix='/mylist')
 def home():
     basic_data = dict(title='ホーム', active_url='home')
 
-    movies = json2df()
+    try:
+        movies = json2df()
+    except:
+        update_json()
+        movies = json2df()
     watched_covers = movies.sort_values('last_watched_at',
                                         ascending=False)[:30]['cover_url'].tolist()
     to_watch_covers = movies.query(' not has_watched ')\

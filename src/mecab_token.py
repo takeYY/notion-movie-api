@@ -4,8 +4,10 @@ import MeCab
 def tokenize(text, target_pos=['名詞']):
     text = text.replace('・', ' ')
     tokens = []
-    mecab = MeCab.Tagger(
-        '-d /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd')
+    try:
+        mecab = MeCab.Tagger('-d /usr/lib/x86_64-linux-gnu/mecab/dic/mecab-ipadic-neologd')
+    except:
+        mecab = MeCab.Tagger('')
     mecab.parse('')  # 文字列のGC防止
     node = mecab.parseToNode(text)
     while node:
